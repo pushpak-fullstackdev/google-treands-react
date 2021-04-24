@@ -1,24 +1,27 @@
-import logo from './logo.svg';
 import './App.css';
-
+import { Topbar } from './components/topbar';
+import { Body } from './components/body';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { format } from './services/api';
+import { useState } from 'react';
 function App() {
+  const [values, setValues] = useState([])
+  const setGraphValue = (array) => {
+    setValues(format(array));
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+    <div className="flex">
+      <div className="center add-margin">
+        <Topbar setValue={setGraphValue}></Topbar>
+      </div>
+      <div className="center">
+        <Body values={values}></Body>
+      </div>
     </div>
+    </MuiPickersUtilsProvider>
   );
 }
 
