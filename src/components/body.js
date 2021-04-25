@@ -1,29 +1,47 @@
 import React from 'react'
-import { Chart } from 'react-charts'
-
-export function Body ({values}) {
-   
+const { Chart } = require("react-google-charts");
+export function Body ({values, chartType}) {
+  
+  const data = React.useMemo(() => {
+    return [{
+      label:'Test',
+      data: values
+      }]
+  }, [values]);
+  
   const axes = React.useMemo(
     () => [
       { primary: true, type: 'time', position: 'bottom' },
       { type: 'linear', position: 'left' }
     ],
-    []
+    [values]
   )
+  console.log('chartType', chartType);
   return (
     <>
-    <div
-        style={{
-            width: '80vw',
-            height: '80vh'
+    <div>
+      {values.length > 0 ? 
+      <Chart
+          width={'80vw'}
+          height={'80vh'}
+          chartType={chartType}
+          loader={<div>Loading Chart</div>}
+          data={[
+            [
+              { type: 'date', label: 'Day' },
+              'Popularity'],
+            ...values
+          ]}
+          options={{
+            hAxis: {
+              title: 'Date',
+            },
+            vAxis: {
+              title: 'Count',
+            },
           }}
-    >
-        <Chart data={[{
-          label:'Test',
-          data: values
-          }]} series={{
-            showPoints: true
-          }} axes={axes} tooltip />
+          rootProps={{ 'data-testid': '1' }}
+        /> : 'No data to display'}
     </div>
     </>
   )

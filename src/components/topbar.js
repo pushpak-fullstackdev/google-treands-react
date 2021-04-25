@@ -1,12 +1,14 @@
-import { Button, TextField } from "@material-ui/core";
+import { Button, MenuItem, Select, TextField } from "@material-ui/core";
 import { DatePicker } from "@material-ui/pickers";
-import { useState } from 'react';
-import { search } from "../services/api";
-export const Topbar = ({setValue}) => {
+import { useEffect, useState } from 'react';
+export const Topbar = ({setValue, updateChartType, updateError}) => {
     const [selectedStartDate, handleStartDateChange] = useState(new Date());
     const [selectedEndDate, handleEndDateChange] = useState(new Date());
     const [text, changeText] = useState('');
+    const [chatType, changeChartType] = useState('LineChart');
 
+    
+    const formatDate = input => `${input.getFullYear()}-${(input.getMonth() + 1) < 10 ? `0${input.getMonth() + 1}` : input.getMonth() + 1}-${input.getDate()}`
 
     return (
         <>
@@ -15,14 +17,19 @@ export const Topbar = ({setValue}) => {
                 disableToolbar
                 variant="inline"
                 label="Start Date"
+                format="d MMM yyyy"
                 value={selectedStartDate}
-                onChange={handleStartDateChange}
+                onChange={(value) => {
+                    console.log(new Date(value));
+                    handleStartDateChange(value)
+                }}
               />
         </div>
         <div>
                 <DatePicker
                     disableToolbar
                     variant="inline"
+                    format="d MMM yyyy"
                     label="End Date"
                     value={selectedEndDate}
                     onChange={handleEndDateChange}
@@ -37,16 +44,34 @@ export const Topbar = ({setValue}) => {
         <div className="align-center">
         <Button 
         onClick={() => {
-            search().then(value => {
-            value.json().then(jsonValue => {
-                setValue(jsonValue)
-            });
-            })
+            if (text.length === 0 || !selectedStartDate || !selectedEndDate) {
+              updateError(true)
+            } else {
+              updateError(false);              
+            }
+            setValue({
+              startDate: formatDate(selectedStartDate),
+              endDate: formatDate(selectedEndDate),
+              text
+          })
         }}
         
         variant="contained" color="primary">
-            Primary
+            Search
         </Button>
+        </div>
+        <div className="align-center">
+        <Select
+          value={chatType}
+          onChange={(e) => {
+              console.log(e.target.value);
+            changeChartType(e.target.value);
+            updateChartType(e.target.value);
+          }}
+        >
+          <MenuItem value={"LineChart"}>Line</MenuItem>
+          <MenuItem value={"Bar"}>Bar</MenuItem>
+        </Select>
         </div>
         </>
         )
